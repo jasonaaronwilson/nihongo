@@ -1,0 +1,1452 @@
+<html>
+  <head>
+
+    <!--
+
+    TODO
+
+    1) if the answer is somehow the same despite being a different index, also disqualify the question
+    2) split english when displaying in answer
+    3) seems a little hard to progress - too many hiragana to get "english" directions often enough?
+
+    Improving Quality
+
+    1) age of the last correct answer should come into play when sorting concepts
+
+    Additional Question Properties
+
+    1) 
+    
+    -->
+    
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- production version, optimized for size and speed -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Serif+JP" rel="stylesheet">
+
+    <style type="text/css">
+      body {
+          font-size: 6em;
+      }
+      .question {
+          margin-t<link href="https://fonts.googleapis.com/css?family=Nanum+Gothic|Nanum+Myeongjo|Noto+Sans+JP|Sawarabi+Mincho" rel="stylesheet">
+op: 1em;
+          text-align: center;
+      }
+      .answer {
+          margin-top: .3em;
+          margin-bottom: .3em;
+          margin-left: .5em;
+      }
+      .dialog {
+          position: fixed;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.8);
+      }
+      .dialog_content {
+          margin-top: 1em;
+          margin-left: auto;
+          margin-right: auto;
+          padding: .5em;
+          width: 85%;
+          background-color: #fff;
+      }
+      .correct-header {
+          color: #4CAF50;
+      }
+      .wrong-header {
+          color: #f44336;
+      }
+      .dialog-button {
+          color: #fff;
+          background-color: #008CBA;
+          width: auto;
+          text-align: center;
+      }
+      .debug-button {
+          padding-left: .5em;
+          font-size: .75em;
+          color: #fff;
+          background-color: #884CBA;
+          width: auto;
+      }
+      .full-concept-json {
+          font-size: .5em;
+      }
+      .debug {
+          font-size: .25em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+
+      <div class="question">
+        {{ get_question_text($data) }}
+      </div>
+
+      <!--
+      <div v-for="concept_idx in concept_idxs">
+        <div class="answer" onclick="check_answer(0); event.stopPropagation()">
+          {{ get_question_text($data) }}
+        </div>
+      </div>
+      -->
+
+      <div v-if="concepts.length > 0" class="answer" onclick="check_answer(0)">
+        {{ get_answer_text($data, 0) }}                                                    
+      </div>
+      <div v-if="concepts.length > 1" class="answer" onclick="check_answer(1)">
+        {{ get_answer_text($data, 1) }}
+      </div>
+      <div v-if="concepts.length > 2" class="answer" onclick="check_answer(2)">
+        {{ get_answer_text($data, 2) }}
+      </div>
+      <div v-if="concepts.length > 3" class="answer" onclick="check_answer(3)">
+        {{ get_answer_text($data, 3) }}
+      </div>
+      <div v-if="concepts.length > 4" class="answer" onclick="check_answer(4)">
+        {{ get_answer_text($data, 4) }}
+      </div>
+      <div v-if="concepts.length > 5" class="answer" onclick="check_answer(5)">
+        {{ get_answer_text($data, 5) }}
+      </div>
+      <div v-if="concepts.length > 6" class="answer" onclick="check_answer(6)">
+        {{ get_answer_text($data, 6) }}
+      </div>
+      <div v-if="concepts.length > 7" class="answer" onclick="check_answer(7)">
+        {{ get_answer_text($data, 7) }}
+      </div>
+      <div v-if="concepts.length > 8" class="answer" onclick="check_answer(8)">
+        {{ get_answer_text($data, 8) }}
+      </div>
+      <div v-if="concepts.length > 9" class="answer" onclick="check_answer(9)">
+        {{ get_answer_text($data, 9) }}
+      </div>
+
+      <div v-if="show_correct || show_wrong" class="dialog">
+        <div class="dialog_content">
+          <div v-if="show_correct" class="correct-header">Correct</div>
+          <div v-if="show_wrong" class="wrong-header">Wrong</div>
+          <div>
+            {{ get_question_text($data) }}
+          </div>
+          <div>
+            {{ get_question_answer_text($data) }}
+          </div>
+          <pre class="full-concept-json">{{ JSON.stringify(answer, null, 2) }}</pre>
+          <div class="dialog-button" onclick="select_next_question(); event.stopPropagation()">
+            Next question
+          </div>
+        </div>
+      </div>
+
+      <div v-if="debug">
+       <div class="dialog-button" onclick="hide_debug()">Hide Debug</div>
+        <div class="debug">
+         <pre> {{ JSON.stringify($data, null, 2) }} </pre>
+        </div>
+       <div class="debug-button" onclick="clear_local_storage();">Remove stats</div>
+     </div>
+
+     <div v-if="!debug">
+       <div class="dialog-button" onclick="show_debug()">Show Debug</div>
+     </div>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    var stats = function() {
+        var item = localStorage.getItem('stats');
+        if (item === null) {
+            return {
+                global: {
+                    waterline_index: 0,
+                }
+            };
+        } else {
+            return JSON.parse(item);
+        }
+    }();
+
+    function clear_local_storage() {
+      localStorage.removeItem('stats');
+      console.log('Local storatge is now', localStorage.getItem('stats'));
+    }
+
+    function get_concept(index) {
+        return all_concepts[index];
+    }
+
+    function get_question_text(data) {
+        function get_question_text_from_concept(concept, direction) {
+            return concept[direction.direction_start];
+        }
+        return get_question_text_from_concept(data.answer, data.direction);
+    }
+
+    function get_question_answer_text(data) {
+        function get_answer_text_from_concept(concept, direction) {
+            return concept[direction.direction_end];
+        }
+        return get_answer_text_from_concept(data.answer, data.direction);
+    }
+
+    function get_answer_text(data, position) {
+        function get_answer_text_from_concept(concept, direction) {
+            return concept[direction.direction_end];
+        }
+        return get_answer_text_from_concept(data.concepts[position], data.direction);
+    }
+
+    function make_direction(question, answer, id_match) {
+      return {
+        direction_name: question + '__to__' + answer,
+        direction_start: question,
+        direction_end: answer,
+        direction_id_match: id_match,
+      };
+    }
+
+    var directions = [
+        make_direction('romaji', 'hiragana', ['h', 'v']),
+        make_direction('hiragana', 'romaji', ['h', 'v']),
+        make_direction('romaji', 'english', ['v']),
+        make_direction('hiragana', 'english', ['v']),
+        make_direction('english', 'hiragana', ['v']),
+    ]
+
+    var all_concepts = [
+        {
+            id: 'h-a',
+            romaji: 'a',
+            hiragana: 'あ',
+        },
+        {
+            id: 'h-i',
+            romaji: 'i',
+            hiragana: 'い',
+        },
+        {
+            id: 'h-u',
+            romaji: 'u',
+            hiragana: 'う',
+        },
+        {
+            id: 'h-e',
+            romaji: 'e',
+            hiragana: 'え',
+        },
+        {
+            id: 'h-o',
+            romaji: 'o',
+            hiragana: 'お',
+        },
+        {
+            id: 'h-ka',
+            romaji: 'ka',
+            hiragana: 'か',
+        },
+        {
+            id: 'h-ki',
+            romaji: 'ki',
+            hiragana: 'き',
+        },
+        {
+            id: 'h-ku',
+            romaji: 'ku',
+            hiragana: 'く',
+        },
+        {
+            id: 'h-ke',
+            romaji: 'ke',
+            hiragana: 'け',
+        },
+        {
+            id: 'h-ko',
+            romaji: 'ko',
+            hiragana: 'こ',
+        },
+        {
+            id: 'h-sa',
+            romaji: 'sa',
+            hiragana: 'さ',
+        },
+        {
+            id: 'h-shi',
+            romaji: 'shi',
+            hiragana: 'し',
+        },
+        {
+            id: 'h-su',
+            romaji: 'su',
+            hiragana: 'す',
+        },
+        {
+            id: 'h-se',
+            romaji: 'se',
+            hiragana: 'せ',
+        },
+        {
+            id: 'h-so',
+            romaji: 'so',
+            hiragana: 'そ',
+        },
+        {
+            id: 'h-ta',
+            romaji: 'ta',
+            hiragana: 'た',
+        },
+        {
+            id: 'h-chi',
+            romaji: 'chi',
+            hiragana: 'ち',
+        },
+        {
+            id: 'h-tsu',
+            romaji: 'tsu',
+            hiragana: 'つ',
+        },
+        {
+            id: 'h-te',
+            romaji: 'te',
+            hiragana: 'て',
+        },
+        {
+            id: 'h-to',
+            romaji: 'to',
+            hiragana: 'と',
+        },
+        {
+            id: 'h-na',
+            romaji: 'na',
+            hiragana: 'な',
+        },
+        {
+            id: 'h-ni',
+            romaji: 'ni',
+            hiragana: 'に',
+        },
+        {
+            id: 'h-nu',
+            romaji: 'nu',
+            hiragana: 'ぬ',
+        },
+        {
+            id: 'h-ne',
+            romaji: 'ne',
+            hiragana: 'ね',
+        },
+        {
+            id: 'h-no',
+            romaji: 'no',
+            hiragana: 'の',
+        },
+        {
+            id: 'h-ha',
+            romaji: 'ha',
+            hiragana: 'は',
+        },
+        {
+            id: 'h-hi',
+            romaji: 'hi',
+            hiragana: 'ひ',
+        },
+        {
+            id: 'h-hu',
+            romaji: 'hu',
+            hiragana: 'ふ',
+        },
+        {
+            id: 'h-he',
+            romaji: 'he',
+            hiragana: 'へ',
+        },
+        {
+            id: 'h-ho',
+            romaji: 'ho',
+            hiragana: 'ほ',
+        },
+        {
+            id: 'h-ma',
+            romaji: 'ma',
+            hiragana: 'ま',
+        },
+        {
+            id: 'h-mi',
+            romaji: 'mi',
+            hiragana: 'み',
+        },
+        {
+            id: 'h-mu',
+            romaji: 'mu',
+            hiragana: 'む',
+        },
+        {
+            id: 'h-me',
+            romaji: 'me',
+            hiragana: 'め',
+        },
+        {
+            id: 'h-mo',
+            romaji: 'mo',
+            hiragana: 'も',
+        },
+        {
+            id: 'h-ya',
+            romaji: 'ya',
+            hiragana: 'や',
+        },
+        {
+            id: 'h-yu',
+            romaji: 'yu',
+            hiragana: 'ゆ',
+        },
+        {
+            id: 'h-yo',
+            romaji: 'yo',
+            hiragana: 'よ',
+        },
+        {
+            id: 'h-ra',
+            romaji: 'ra',
+            hiragana: 'ら',
+        },
+        {
+            id: 'h-ri',
+            romaji: 'ri',
+            hiragana: 'り',
+        },
+        {
+            id: 'h-ru',
+            romaji: 'ru',
+            hiragana: 'る',
+        },
+        {
+            id: 'h-re',
+            romaji: 're',
+            hiragana: 'れ',
+        },
+        {
+            id: 'h-ro',
+            romaji: 'ro',
+            hiragana: 'ろ',
+        },
+        {
+            id: 'h-wa',
+            romaji: 'wa',
+            hiragana: 'わ',
+        },
+        {
+            id: 'h-wi',
+            romaji: 'wi',
+            hiragana: 'ゐ',
+        },
+        {
+            id: 'h-we',
+            romaji: 'we',
+            hiragana: 'ゑ',
+        },
+        {
+            id: 'h-wo',
+            romaji: 'wo',
+            hiragana: 'を',
+        },
+        {
+            id: 'h-ga',
+            romaji: 'ga',
+            hiragana: 'が',
+        },
+        {
+            id: 'h-gi',
+            romaji: 'gi',
+            hiragana: 'ぎ',
+        },
+        {
+            id: 'h-gu',
+            romaji: 'gu',
+            hiragana: 'ぐ',
+        },
+        {
+            id: 'h-ge',
+            romaji: 'ge',
+            hiragana: 'げ',
+        },
+        {
+            id: 'h-go',
+            romaji: 'go',
+            hiragana: 'ご',
+        },
+        {
+            id: 'h-za',
+            romaji: 'za',
+            hiragana: 'ざ',
+        },
+        {
+            id: 'h-ji',
+            romaji: 'ji',
+            hiragana: 'じ',
+        },
+        {
+            id: 'h-zu',
+            romaji: 'zu',
+            hiragana: 'ず',
+        },
+        {
+            id: 'h-ze',
+            romaji: 'ze',
+            hiragana: 'ぜ',
+        },
+        {
+            id: 'h-zo',
+            romaji: 'zo',
+            hiragana: 'ぞ',
+        },
+        {
+            id: 'h-da',
+            romaji: 'da',
+            hiragana: 'だ',
+        },
+        {
+            id: 'h-ji',
+            romaji: 'ji',
+            hiragana: 'ぢ',
+        },
+        {
+            id: 'h-zu',
+            romaji: 'zu',
+            hiragana: 'づ',
+        },
+        {
+            id: 'h-de',
+            romaji: 'de',
+            hiragana: 'で',
+        },
+        {
+            id: 'h-do',
+            romaji: 'do',
+            hiragana: 'ど',
+        },
+        {
+            id: 'h-ba',
+            romaji: 'ba',
+            hiragana: 'ば',
+        },
+        {
+            id: 'h-bi',
+            romaji: 'bi',
+            hiragana: 'び',
+        },
+        {
+            id: 'h-bu',
+            romaji: 'bu',
+            hiragana: 'ぶ',
+        },
+        {
+            id: 'h-be',
+            romaji: 'be',
+            hiragana: 'べ',
+        },
+        {
+            id: 'h-bo',
+            romaji: 'bo',
+            hiragana: 'ぼ',
+        },
+        {
+            id: 'h-pa',
+            romaji: 'pa',
+            hiragana: 'ぱ',
+        },
+        {
+            id: 'h-pi',
+            romaji: 'pi',
+            hiragana: 'ぴ',
+        },
+        {
+            id: 'h-pu',
+            romaji: 'pu',
+            hiragana: 'ぷ',
+        },
+        {
+            id: 'h-pe',
+            romaji: 'pe',
+            hiragana: 'ぺ',
+        },
+        {
+            id: 'h-po',
+            romaji: 'po',
+            hiragana: 'ぽ',
+        },
+        {
+            id: 'h-kya',
+            romaji: 'kya',
+            hiragana: 'きゃ',
+        },
+        {
+            id: 'h-kyu',
+            romaji: 'kyu',
+            hiragana: 'きゅ',
+        },
+        {
+            id: 'h-kyo',
+            romaji: 'kyo',
+            hiragana: 'きょ',
+        },
+        {
+            id: 'h-sha',
+            romaji: 'sha',
+            hiragana: 'しゃ',
+        },
+        {
+            id: 'h-shu',
+            romaji: 'shu',
+            hiragana: 'しゅ',
+        },
+        {
+            id: 'h-sho',
+            romaji: 'sho',
+            hiragana: 'しょ',
+        },
+        {
+            id: 'h-cha',
+            romaji: 'cha',
+            hiragana: 'ちゃ',
+        },
+        {
+            id: 'h-chu',
+            romaji: 'chu',
+            hiragana: 'ちゅ',
+        },
+        {
+            id: 'h-cho',
+            romaji: 'cho',
+            hiragana: 'ちょ',
+        },
+        {
+            id: 'h-nya',
+            romaji: 'nya',
+            hiragana: 'にゃ',
+        },
+        {
+            id: 'h-nyu',
+            romaji: 'nyu',
+            hiragana: 'にゅ',
+        },
+        {
+            id: 'h-nyo',
+            romaji: 'nyo',
+            hiragana: 'にょ',
+        },
+        {
+            id: 'h-hya',
+            romaji: 'hya',
+            hiragana: 'ひゃ',
+        },
+        {
+            id: 'h-hyu',
+            romaji: 'hyu',
+            hiragana: 'ひゅ',
+        },
+        {
+            id: 'h-hyo',
+            romaji: 'hyo',
+            hiragana: 'ひょ',
+        },
+        {
+            id: 'h-mya',
+            romaji: 'mya',
+            hiragana: 'みゃ',
+        },
+        {
+            id: 'h-myu',
+            romaji: 'myu',
+            hiragana: 'みゅ',
+        },
+        {
+            id: 'h-myo',
+            romaji: 'myo',
+            hiragana: 'みょ',
+        },
+        {
+            id: 'h-rya',
+            romaji: 'rya',
+            hiragana: 'りゃ',
+        },
+        {
+            id: 'h-ryu',
+            romaji: 'ryu',
+            hiragana: 'りゅ',
+        },
+        {
+            id: 'h-ryo',
+            romaji: 'ryo',
+            hiragana: 'りょ',
+        },
+        {
+            id: 'h-gya',
+            romaji: 'gya',
+            hiragana: 'ぎゃ',
+        },
+        {
+            id: 'h-gyu',
+            romaji: 'gyu',
+            hiragana: 'ぎゅ',
+        },
+        {
+            id: 'h-gyo',
+            romaji: 'gyo',
+            hiragana: 'ぎょ',
+        },
+        {
+            id: 'h-ja',
+            romaji: 'ja',
+            hiragana: 'じゃ',
+        },
+        {
+            id: 'h-ju',
+            romaji: 'ju',
+            hiragana: 'じゅ',
+        },
+        {
+            id: 'h-jo',
+            romaji: 'jo',
+            hiragana: 'じょ',
+        },
+        {
+            id: 'h-ja',
+            romaji: 'ja',
+            hiragana: 'ぢゃ',
+        },
+        {
+            id: 'h-ju',
+            romaji: 'ju',
+            hiragana: 'ぢゅ',
+        },
+        {
+            id: 'h-jo',
+            romaji: 'jo',
+            hiragana: 'ぢょ',
+        },
+        {
+            id: 'h-bya',
+            romaji: 'bya',
+            hiragana: 'びゃ',
+        },
+        {
+            id: 'h-byu',
+            romaji: 'byu',
+            hiragana: 'びゅ',
+        },
+        {
+            id: 'h-byo',
+            romaji: 'byo',
+            hiragana: 'びょ',
+        },
+        {
+            id: 'h-pya',
+            romaji: 'pya',
+            hiragana: 'ぴゃ',
+        },
+        {
+            id: 'h-pyu',
+            romaji: 'pyu',
+            hiragana: 'ぴゅ',
+        },
+        {
+            id: 'h-pyo',
+            romaji: 'pyo',
+            hiragana: 'ぴょ',
+        },
+        {
+            id: 'v-au',
+            romaji: 'au',
+            hiragana: "あう",
+            kanji: '会う',
+            english: 'to meet, to see',
+        },
+        {
+        id: 'v-aku',
+        romaji: 'aku',
+        hiragana: 'あく',
+        kanji: '開く',
+        english: 'to open, to become open'
+    },
+    {
+        id: 'v-akeru',
+        romaji: 'ake.ru',
+        hiragana: 'あける',
+        kanji: '開ける',
+        english: 'to open',
+    },
+    {
+        id: 'v-ageru',
+        romaji: 'age.ru',
+        hiragana: 'あげる',
+        kanji: '上げる',
+        english: 'to give',
+    },
+    {
+        id: 'v-asobu',
+        romaji: 'asobu',
+        hiragana: 'あそぶ',
+        kanji: '遊ぶ',
+        english: 'to play, to make a visit',
+    },
+    {
+        id: 'v-abiru',
+        romaji: 'abi.ru',
+        hiragana: 'あびる',
+        kanji: 'あびる',
+        english: 'to bathe, to shower',
+    },
+    {
+        id: 'v-arau',
+        romaji: 'arau',
+        hiragana: 'あらう',
+        kanji: '洗う',
+        english: 'to wash',
+    },
+    {
+        id: 'v-aru',
+        romaji: 'aru',
+        hiragana: 'ある',
+        kanji: 'ある',
+        english: 'to be, to exist, to live, to have',
+    },
+    {
+        id: 'v-aruku',
+        romaji: 'aruku',
+        hiragana: 'あるく',
+        kanji: '歩く',
+        english: 'to walk',
+    },
+    {
+        id: 'v-iu',
+        romaji: 'iu',
+        hiragana: 'いう',
+        kanji: '言う',
+        english: 'to say, to name, to make a noise',
+    },
+    {
+        id: 'v-iku',
+        romaji: 'iku',
+        hiragana: 'いく',
+        kanji: '行く',
+        english: 'to go',
+    },
+    {
+        id: 'v-i.ru',
+        romaji: 'i.ru',
+        hiragana: 'いる',
+        kanji: '居る',
+        english: 'to be (animate), to exist (hum)',
+    },
+    {
+        id: 'v-iru',
+        romaji: 'iru',
+        hiragana: 'いる',
+        kanji: '要る',
+        english: 'to need',
+    },
+    {
+        id: 'v-ire.ru',
+        romaji: 'ire.ru',
+        hiragana: 'いれる',
+        kanji: '入れる',
+        english: 'to put in',
+    },
+    {
+        id: 'v-utau',
+        romaji: 'utau',
+        hiragana: 'うたう',
+        kanji: '歌う',
+        english: 'to sing',
+    },
+    {
+        id: 'v-umare.ru',
+        romaji: 'umare.ru',
+        hiragana: 'うまれる',
+        kanji: '生まれる',
+        english: 'to be born',
+    },
+    {
+        id: 'v-uru',
+        romaji: 'uru',
+        hiragana: 'うる',
+        kanji: '売る',
+        english: 'to sell',
+    },
+    {
+        id: 'v-oki.ru',
+        romaji: 'oki.ru',
+        hiragana: 'おきる',
+        kanji: '起きる',
+        english: 'to get up, to rise',
+    },
+    {
+        id: 'v-oku',
+        romaji: 'oku',
+        hiragana: 'おく',
+        kanji: '置く',
+        english: 'to put, to place',
+    },
+    {
+        id: 'v-oshie.ru',
+        romaji: 'oshieru',
+        hiragana: 'おしえる',
+        kanji: '教える',
+        english: 'to teach, to inform',
+    },
+    {
+        id: 'v-osu',
+        romaji: 'osu',
+        hiragana: 'おす',
+        kanji: '押す',
+        english: 'to push, to press',
+    },
+    {
+        id: 'v-oboe.ru',
+        romaji: 'oboe.ru',
+        hiragana: 'おぼえる',
+        kanji: '覚える',
+        english: 'to remember, to memorise',
+    },
+    {
+        id: 'v-oyogu',
+        romaji: 'oyogu',
+        hiragana: 'およぐ',
+        kanji: '泳ぐ',
+        english: 'to swim',
+    },
+    {
+        id: 'v-ori.ru',
+        romaji: 'ori.ru',
+        hiragana: 'おりる',
+        kanji: '降りる',
+        english: 'to get off, to disembark, to dismount',
+    },
+    {
+        id: 'v-owaru',
+        romaji: 'owaru',
+        hiragana: 'おわる',
+        kanji: '終る',
+        english: 'to finish, to close',
+    },
+    {
+        id: 'v-kau',
+        romaji: 'kau',
+        hiragana: 'かう',
+        kanji: '買う',
+        english: 'to buy',
+    },
+    {
+        id: 'v-kaesu',
+        romaji: 'kaesu',
+        hiragana: 'かえす',
+        kanji: '返す',
+        english: 'to return something',
+    },
+    {
+        id: 'v-kaeru',
+        romaji: 'kaeru',
+        hiragana: 'かえる',
+        kanji: '帰る',
+        english: 'to go home, to return',
+    },
+    {
+        id: 'v-kakaru',
+        romaji: 'kakaru',
+        hiragana: 'かかる',
+        kanji: 'Kana*',
+        english: 'to take (eg time, money)',
+    },
+    
+    ];
+
+/*
+    concepts += [
+    },
+    ];
+*/
+/*
+
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'かく',
+        kanji: '書く',
+        english: 'to write',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'かける',
+        kanji: 'Kana*',
+        english: 'to put on (eg glasses)',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'かける',
+        kanji: 'Kana*',
+        english: 'to dial/call (eg phone)',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'かす',
+        kanji: '貸す',
+        english: 'to lend',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'かぶる',
+        kanji: 'Kana*',
+        english: 'to wear, to put on (head)',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'かりる',
+        kanji: '借りる',
+        english: 'to borrow, to have a loan',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'きえる',
+        kanji: '消える',
+        english: 'to go out, to vanish',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'きく',
+        kanji: '聞く',
+        english: 'to hear, to listen, to ask',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'きる',
+        kanji: '切る',
+        english: 'to cut, to chop',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'きる',
+        kanji: '着る',
+        english: 'to wear, to put on (from shoulders down)',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'くもる',
+        kanji: '曇る',
+        english: 'to become cloudy, to become dim',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'けす',
+        kanji: '消す',
+        english: 'to erase, to delete, to turn off power',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'こたえる',
+        kanji: '答える',
+        english: 'to answer, to reply',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'こまる',
+        kanji: '困る',
+        english: 'to be worried, to be bothered',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'さす',
+        kanji: '差す',
+        english: 'to raise (stretch out) hands, to raise (eg umbrella)',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'しまる',
+        kanji: '閉まる',
+        english: 'to close, to be closed',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'しめる',
+        kanji: '閉める',
+        english: 'to close, to shut',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'しめる',
+        kanji: '締める',
+        english: 'to tie, to fasten',
+    },
+    {
+        id: '',
+        romaji: '',
+        hiragana: 'しる',
+        kanji: '知る',
+        english: 'to know, to understand',
+    },
+    ];
+*/
+
+    var data = {
+        // The maximum question to present. The waterline will be
+        // increased as the confidence in the concepts beneath the
+        // waterline raises above a threshold.
+        waterline_index: stats.global && stats.global.waterline_index ? stats.global.waterline_index : 10,
+        // The current "direction" of the question
+        direction: make_direction('hiragana', 'romaji', 'h'),
+        // These are the "answers" that will be present.
+        concepts: [],
+        // The current answer we are looking for which should obviously be present in concepts
+        answer: {},
+        // When true, show the correct answer dialog
+        show_correct: false,
+        // When true, show the wrong answer dialog
+        show_wrong: false,
+        // when true, show the debug extra information
+        debug: false,
+
+        // functions used during rendering
+        get_question_text: get_question_text,
+        get_question_answer_text: get_question_answer_text,
+        get_answer_text: get_answer_text,
+        get_concept: get_concept,
+    };
+
+    function check_answer(index) {
+        data.show_correct = (data.concepts[index].id == data.answer.id);
+        data.show_wrong = !data.show_correct;
+    }
+
+    function select_next_question() {   
+        update_statistics();
+        data.show_correct = data.show_wrong = false;
+
+        maybe_increase_waterline();
+        var concepts = get_sorted_concepts();
+        var question = get_best_question_data(concepts);
+        data.concepts = question.concepts;
+        data.answer = question.answer;
+        data.direction = question.direction;
+        data.question_score = question.score;
+        console.log("data", data);
+    }
+
+    function get_random_scored_concept(sorted_concepts) {
+        var random = 1.0;
+        for (var i = 0; i < 8; i++) {
+            var next = Math.random();
+            if (next < random) {
+                random = next;
+            }
+        }
+        var index = Math.floor(random * sorted_concepts.length);
+        var concept = sorted_concepts[index];
+        // console.log("random_concept", sorted_concepts, random, index, concept);
+        return concept;
+    }
+
+    function update_statistics() {
+        if (!stats.global) {
+            stats.global = {};
+        }
+        stats.global.waterline_index = data.waterline_index;
+
+        console.log(data.answer);
+        var question_id = data.answer.id;
+        var direction_name = data.direction.direction_name;
+        console.log('direction_name', direction_name);
+        var stat = get_stat(question_id);
+        if (data.show_correct) {
+            increment_direction_statistic(stat, direction_name, 'correct');
+        } else {
+            increment_direction_statistic(stat, direction_name, 'wrong');
+        }
+        stats[question_id] = stat;
+        localStorage.setItem("stats", JSON.stringify(stats));
+        console.log('stats is', stats);
+    }
+
+    function increment_direction_statistic(stat, direction_name, property_name) {
+      stat[direction_name] = stat[direction_name] ? stat[direction_name] : {
+        correct: {},
+        wrong: {},
+        last_correct_time: {},
+        last_wrong_time: {},
+      };
+      stat[direction_name][property_name] = stat[direction_name][property_name]
+        ? 0
+        : stat[direction_name][property_name];
+      stat[direction_name][property_name] = stat[direction_name][property_name] + 1;
+      stat[direction_name]['last_' + property_name + '_time'] = new Date().getTime();
+      stat['all_' + property_name] = stat['all_' + property_name] ? (stat['all_' + property_name] + 1) : 1;
+      stat.all_last_answers = update_last_answers(stat.all_last_answers, property_name);
+      console.log("modified stat is", stat);
+    }
+
+    function update_last_answers(last_answers, property_name) {
+        var bit = (property_name == 'correct') ? 1 : 0;
+        // Just keep the last 24 latest answers as this will save a bit of
+        // space and answers older than that are of less value
+        return (((last_answers ? last_answers : 0) << 1) & 0xffffff) | bit;
+    }
+
+    function last_answers_to_confidence(last_answers) {
+        var last_four = (last_answers ? last_answers : 0) & 0xf;
+        var result = 0.0;
+        if (last_four & 0x1) {
+            result += 0.50;
+        }
+        if (last_four & 0x2) {
+            result += 0.25;
+        }
+        if (last_four & 0x4) {
+            result += 0.15;
+        }
+        if (last_four & 0x8) {
+            result += 0.10;
+        }
+        return result;
+    }
+
+    function get_stat(question_id) {
+        return stats[question_id]
+            ? stats[question_id]
+            : {};
+    }
+
+    function maybe_increase_waterline() {
+        if (data.waterline_index >= all_concepts.length) {
+            console.log("no more concepts versus waterline");
+            return;
+        }
+        var not_correct = all_not_correct_in_any_direction();
+        console.log("all not correct " + not_correct);
+        if (not_correct > 8) {
+            console.log("too many concepts never answered correctly to increase waterline");
+            return;
+        }
+        var average_score = compute_average_score();
+        if (average_score > 0.80) {
+            console.log("increasing waterline as average score is above 80%", average_score);
+            data.waterline_index += 1;
+        } else {
+            console.log("not increasing waterline since average is below 80%", average_score);
+        }
+    }
+
+    function all_not_correct_in_any_direction() {
+        var result = 0;
+        for (var i = 0; i < data.waterline_index; i++) {
+            result += number_of_directions_never_correct(all_concepts[i]);
+        }
+        return result;
+    }
+
+    function number_of_directions_never_correct(concept) {
+        var concept_id = concept.id;
+        var stat = get_stat(concept_id);
+        var concept_id_prefix = concept_id.charAt(0);
+        var result = 0;
+        for (var j = 0; j < directions.length; j++) {
+            var direction = directions[j];
+            if (direction.direction_id_match.includes(concept_id_prefix)) {
+                if (!stat[direction.direction_name]
+                    || !stat[direction.direction_name].correct
+                    || stat[direction.direction_name].correct <= 0) {
+                    result += 1;
+                }
+            }
+        }
+        return result;
+    }
+
+    function compute_average_score() {
+        var total_confidence = 0.0;
+        var total_count = 0;
+        for (var i = 0; i < data.waterline_index; i++) {
+            var question_id = all_concepts[i].id;
+            var stat = get_stat(question_id);
+            if ('all_last_answers' in stat) {
+                total_confidence += last_answers_to_confidence(stat.all_last_answers);
+                total_count += 1;
+            }
+        }
+        if (total_count == 0) {
+            return 0.0;
+        }
+        return  total_confidence / total_count;
+    }
+        
+    function get_best_question_data(sorted_concepts) {
+        var now = new Date().getTime();
+
+        // Select the highest scoring question according the question
+        // scoring function which looks for concepts that haven't been
+        // answered correctly in the longest amount of time, etc.
+
+        var question = get_question_data(sorted_concepts, now);
+        for (var i = 0; i < 1000; i++) {
+            var q2 = get_question_data(sorted_concepts, now);
+            if (q2.score > question.score) {
+                question = q2;
+            }
+        }
+        return question;
+    }
+
+    function get_question_data(sorted_concepts, now) {
+        var result = {};
+        result.concepts = [];
+        var number_of_concepts = 2 + Math.floor(Math.random() * 4);
+        for (var i = 0; i < number_of_concepts; i++) {
+            while (true) {
+                var concept = get_random_scored_concept(sorted_concepts).concept;
+                if (!concept) {
+                    throw "concept is not true";
+                }
+                if (result.concepts.indexOf(concept) < 0) {
+                    result.concepts.push(concept);
+                    break;
+                }
+            }
+        }
+        // console.log("get_question_data", result);
+        var index = Math.floor(Math.random() * result.concepts.length);
+        result.answer = result.concepts[index];
+        result.direction = get_direction(result);
+        result.score = score_question(now, result);
+        return result;
+    }
+
+    function get_direction(question) {
+        // Choose a direction at random and see if all of the concepts support
+        // that format.
+        for (var i = 0; i < 100; i++) {
+            var direction = directions[Math.floor(Math.random() * directions.length)];
+            var num_matches = 0;
+            // console.log("concepts", question.concepts);
+            for (var j = 0; j < question.concepts.length; j++) {
+                var concept = question.concepts[j];
+                var prefixChar = concept.id.charAt(0);
+                if (direction.direction_id_match.includes(prefixChar)) {
+                    num_matches++;
+                } else {
+                  break;
+                }
+            }
+            if (num_matches == question.concepts.length) {
+                return direction;
+            }
+        }
+        throw "A suitable direction could not be found";
+    }
+
+    function score_question(now, result) {
+        var direction = result.direction;
+        var score = 0.0;
+        var total_directions_never_correct = 0;
+        for (var i = 0; i < result.concepts.length; i++) {
+            var concept = result.concepts[i];
+            var stat = get_stat(concept);
+            score += (now - ((stat[direction.direction_name])
+                             && (stat[direction.direction_name].last_correct_time)
+                             ? (stat[direction.direction_name].last_correct_time)
+                             : 0));
+            total_directions_never_correct += number_of_directions_never_correct(concept);
+        }
+        score = (score / result.concepts.length);
+        if (total_directions_never_correct > 0) {
+            score *= total_directions_never_correct;
+        }
+        // bump up the score if the answer has been answered correctly less than 10 times
+        var concept = result.answer;
+        var stat = get_stat(concept);
+        var stat_all_correct = (stat.all_correct ? stat.all_correct : 0);
+        if (stat_all_correct < 1) {
+            score *= 2.2;
+        } if (stat_all_correct < 2) {
+            score *= 2.0;
+        } else if (stat_all_correct < 4) {
+            score *= 1.8;
+        } else if (stat_all_correct < 6) {
+            score *= 1.6;
+        } else if (stat_all_correct < 8) {
+            score *= 1.4;
+        } else if (stat_all_correct < 10) {
+            score *= 1.2;
+        }
+        if (number_of_directions_never_correct(concept)) {
+            score *= 2.5;
+        }
+        return score;
+    }
+
+    function score_concept(concept) {
+        var score = 0.0;
+        var total_directions_never_correct = number_of_directions_never_correct(concept);
+        if (total_directions_never_correct > 0) {
+            return 1.0 * total_directions_never_correct;
+        }
+        var stat = get_stat(concept.id);
+        if ('all_last_answers' in stat) {
+            var result = 1.0 - last_answers_to_confidence(stat.all_last_answers);
+            return result;
+        } else {
+            return 1.0;
+        }
+    }
+
+    function get_sorted_concepts() {
+        var array = [];
+        for (var i = 0; i < data.waterline_index; i++) {
+            var concept = all_concepts[i];
+            array.push({
+                    score: score_concept(concept),
+                    concept: concept,
+            });
+        }
+        array.sort(function (a, b) {return b.score - a.score;});
+        return array;
+    }
+
+    function show_debug() {
+        data.debug = true;
+    }
+
+    function hide_debug() {
+        data.debug = false;
+    }
+
+    var app = new Vue({
+        el: '#app',
+        data: data,
+    });
+
+    select_next_question();
+  </script>
+</html>
