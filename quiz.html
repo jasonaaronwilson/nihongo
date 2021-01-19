@@ -81,11 +81,21 @@ op: 1em;
       .debug {
           font-size: .25em;
       }
+      .app-header {
+          margin-bottom: 1em;
+          text-align: center;
+          color: #fff;
+          background-color: #f00;
+      }
     </style>
   </head>
 
   <body>
     <div id="app">
+
+      <div class="app-header">
+        Hiragana ⟷ Romaji
+      </div>
 
       <div class="question">
         {{ get_question_text($data) }}
