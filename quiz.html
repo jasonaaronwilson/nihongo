@@ -11,6 +11,7 @@
       @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Potta+One&family=Sawarabi+Mincho&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Potta+One&family=Sawarabi+Mincho&family=Yusei+Magic&display=swap');
       .font-family-noto-serif-jp {
           font-family: 'Noto Serif JP';
       }
@@ -19,6 +20,9 @@
       }
       .font-family-potta-one {
         font-family: 'Potta One', cursive;
+      }
+      .font-family-yusei-magic {
+        font-family: 'Yusei Magic', san-serif;
       }
     </style>
 
@@ -73,13 +77,32 @@
       }
       .debug-button {
           padding-left: .5em;
+          font-size: 1em;
+          color: #000;
+          width: auto;
+          position: fixed;
+          bottom: 10px;
+          right: 5px;
+      }
+      .change-font-button {
+          font-size: 1em;
+          color: #000;
+          width: auto;
+          position: fixed;
+          bottom: 10px;
+          right: 1.5em;
+      }
+      .full-concept-json {
+          font-size: .5em;
+      }
+      .remove-stats-button {
+          padding-left: .5em;
           font-size: .75em;
           color: #fff;
           background-color: #884CBA;
           width: auto;
-      }
-      .full-concept-json {
-          font-size: .5em;
+          margin-top: 1em;
+          margin-bottom: 1em;
       }
       .debug {
           font-size: .25em;
@@ -171,19 +194,24 @@
         <div class="debug">
          <pre> {{ JSON.stringify($data, null, 2) }} </pre>
         </div>
-       <div class="debug-button" onclick="clear_local_storage();">Remove stats</div>
+       <div class="remove-stats-button" onclick="clear_local_storage();">Remove stats</div>
      </div>
 
      <div v-if="!debug">
-       <div class="dialog-button" onclick="show_debug()">Show Debug</div>
-       <div class="dialog-button" onclick="change_font()">Change Font</div>
+       <div class="debug-button" onclick="show_debug()">&#x2699;</div>
+       <div class="change-font-button" onclick="change_font()">A<sub>B<sub>C</sub></sub></div> <!-- &#x270d; -->
      </div>
     </div>
   </body>
 
   <script type="text/javascript">
 
-    var FONT_FAMILIES = ['font-family-noto-serif-jp', 'font-family-sawarabi-mincho', 'font-family-potta-one'];
+    var FONT_FAMILIES = [
+       'font-family-noto-serif-jp',
+       'font-family-sawarabi-mincho',
+       'font-family-potta-one',
+       'font-family-yusei-magic',
+    ];
 
     var stats = function() {
         var item = localStorage.getItem('stats');
@@ -1485,7 +1513,11 @@
     }
 
     function change_font() {
-        data.font_family = random_element(FONT_FAMILIES);
+        var new_font_family = '';
+        do {
+          new_font_family = random_element(FONT_FAMILIES);
+        } while (new_font_family == data.font_family);
+        data.font_family = new_font_family;
         console.log(data.font_family);
     }
 
