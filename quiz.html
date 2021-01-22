@@ -10,11 +10,15 @@
     <style type="text/css">
       @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Potta+One&family=Sawarabi+Mincho&display=swap');
       .font-family-noto-serif-jp {
           font-family: 'Noto Serif JP';
       }
       .font-family-sawarabi-mincho {
         font-family: 'Sawarabi Mincho', sans-serif;
+      }
+      .font-family-potta-one {
+        font-family: 'Potta One', cursive;
       }
     </style>
 
@@ -172,11 +176,15 @@
 
      <div v-if="!debug">
        <div class="dialog-button" onclick="show_debug()">Show Debug</div>
+       <div class="dialog-button" onclick="change_font()">Change Font</div>
      </div>
     </div>
   </body>
 
   <script type="text/javascript">
+
+    var FONT_FAMILIES = ['font-family-noto-serif-jp', 'font-family-sawarabi-mincho', 'font-family-potta-one'];
+
     var stats = function() {
         var item = localStorage.getItem('stats');
         if (item === null) {
@@ -1151,7 +1159,7 @@
         get_question_answer_text: get_question_answer_text,
         get_answer_text: get_answer_text,
         get_concept: get_concept,
-        font_family: 'font-family-sawarabi-mincho', /* 'font-family-noto-serif-jp', */
+        font_family: FONT_FAMILIES[0],
     };
 
     function check_answer(index) {
@@ -1476,10 +1484,19 @@
         data.debug = false;
     }
 
+    function change_font() {
+        data.font_family = random_element(FONT_FAMILIES);
+        console.log(data.font_family);
+    }
+
     var app = new Vue({
         el: '#app',
         data: data,
     });
+
+    function random_element(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
 
     select_next_question();
   </script>
