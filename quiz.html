@@ -1200,6 +1200,7 @@ op: 1em;
         console.log(data.answer);
         var question_id = data.answer.id;
         var direction_name = data.direction.direction_name;
+        add_last_answer(question_id);
         console.log('direction_name', direction_name);
         var stat = get_stat(question_id);
         if (data.show_correct) {
@@ -1210,6 +1211,19 @@ op: 1em;
         stats[question_id] = stat;
         localStorage.setItem("stats", JSON.stringify(stats));
         console.log('stats is', stats);
+    }
+
+    var last_answers = [];
+
+    function add_last_answer() {
+      last_answers.push(data.answer.id);
+      if (last_answers.length > 4) {
+        last_answers.shift();
+      }
+    }
+
+    function is_too_early(question) {
+      return (last_answers.indexOf(question.answer.id) >= 0);
     }
 
     function increment_direction_statistic(stat, direction_name, property_name) {
@@ -1275,7 +1289,9 @@ op: 1em;
         if (average_score > 0.80) {
             console.log("increasing waterline as average score is above 80%", average_score);
             data.waterline_index += 1;
+            console.log("increased waterline to ", data.waterline_index);
         } else {
+            console.log("keeping waterline at ", data.waterline_index);
             console.log("not increasing waterline since average is below 80%", average_score);
         }
     }
@@ -1333,7 +1349,8 @@ op: 1em;
         var question = get_question_data(sorted_concepts, now);
         for (var i = 0; i < 1000; i++) {
             var q2 = get_question_data(sorted_concepts, now);
-            if (q2.score > question.score) {
+            if (q2.score > question.score && 
+                !is_too_early(question)) {
                 question = q2;
             }
         }
