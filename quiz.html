@@ -108,6 +108,8 @@ op: 1em;
         Hiragana ⟷ Romaji
       </div>
 
+      <div :font-family="$data.font_family">
+
       <div class="question">
         {{ get_question_text($data) }}
       </div>
@@ -149,6 +151,8 @@ op: 1em;
       </div>
       <div v-if="concepts.length > 9" class="answer" onclick="check_answer(9)">
         {{ get_answer_text($data, 9) }}
+      </div>
+
       </div>
 
       <div v-if="show_correct || show_wrong" class="dialog">
@@ -1157,6 +1161,7 @@ op: 1em;
         get_question_answer_text: get_question_answer_text,
         get_answer_text: get_answer_text,
         get_concept: get_concept,
+        font_family: 'Noto Sans JP',
     };
 
     function check_answer(index) {
