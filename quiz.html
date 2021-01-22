@@ -1133,11 +1133,14 @@ op: 1em;
     ];
 */
 
+    var INITIAL_WATERLINE = 15;
+    var TOO_SOON_SIZE = 6;
+
     var data = {
         // The maximum question to present. The waterline will be
         // increased as the confidence in the concepts beneath the
         // waterline raises above a threshold.
-        waterline_index: stats.global && stats.global.waterline_index ? stats.global.waterline_index : 10,
+        waterline_index: stats.global && stats.global.waterline_index ? stats.global.waterline_index : INITIAL_WATERLINE,
         // The current "direction" of the question
         direction: make_direction('hiragana', 'romaji', 'h'),
         // These are the "answers" that will be present.
@@ -1217,7 +1220,7 @@ op: 1em;
 
     function add_last_answer() {
       last_answers.push(data.answer.id);
-      if (last_answers.length > 4) {
+      if (last_answers.length > TOO_SOON_SIZE) {
         last_answers.shift();
       }
     }
