@@ -303,14 +303,19 @@
     }
 
     var directions = [
-        make_direction('romaji', 'hiragana', ['h', 'v']),
-        make_direction('hiragana', 'romaji', ['h', 'v']),
-        make_direction('romaji', 'english', ['v']),
-        make_direction('hiragana', 'english', ['v']),
-        make_direction('english', 'hiragana', ['v']),
+        make_direction('romaji', 'hiragana', ['h']),
+        make_direction('hiragana', 'romaji', ['h']),
+        make_direction('romaji', 'katakana', ['k']),
+        make_direction('katakana', 'romaji', ['k']),
+        // make_direction('romaji', 'english', ['v']),
+        // make_direction('hiragana', 'english', ['v']),
+        // make_direction('english', 'hiragana', ['v']),
     ]
 
     var all_concepts = [
+        /* ============================================================ */
+        /* Hirigana */
+        /* ============================================================ */
         {
             id: 'h-a',
             romaji: 'a',
@@ -852,6 +857,553 @@
             hiragana: 'ぴょ',
         },
 
+        /* ============================================================ */
+        /* Katakana */
+        /* ============================================================ */
+
+        {
+            id: 'k-a',
+            romaji: 'a',
+            katakana: 'ア',
+        },
+        {
+            id: 'k-i',
+            romaji: 'i',
+            katakana: 'イ',
+        },
+        {
+            id: 'k-u',
+            romaji: 'u',
+            katakana: 'ウ',
+        },
+        {
+            id: 'k-e',
+            romaji: 'e',
+            katakana: 'エ',
+        },
+        {
+            id: 'k-o',
+            romaji: 'o',
+            katakana: 'オ',
+        },
+        {
+            id: 'k-ka',
+            romaji: 'ka',
+            katakana: 'カ',
+        },
+        {
+            id: 'k-ki',
+            romaji: 'ki',
+            katakana: 'キ',
+        },
+        {
+            id: 'k-ku',
+            romaji: 'ku',
+            katakana: 'ク',
+        },
+        {
+            id: 'k-ke',
+            romaji: 'ke',
+            katakana: 'ケ',
+        },
+        {
+            id: 'k-ko',
+            romaji: 'ko',
+            katakana: 'コ',
+        },
+        {
+            id: 'k-sa',
+            romaji: 'sa',
+            katakana: 'サ',
+        },
+        {
+            id: 'k-shi',
+            romaji: 'shi',
+            katakana: 'シ',
+        },
+        {
+            id: 'k-su',
+            romaji: 'su',
+            katakana: 'ス',
+        },
+        {
+            id: 'k-se',
+            romaji: 'se',
+            katakana: 'セ',
+        },
+        {
+            id: 'k-so',
+            romaji: 'so',
+            katakana: 'ソ',
+        },
+        {
+            id: 'k-ta',
+            romaji: 'ta',
+            katakana: 'タ',
+        },
+        {
+            id: 'k-chi',
+            romaji: 'chi',
+            katakana: 'チ',
+        },
+        {
+            id: 'k-tsu',
+            romaji: 'tsu',
+            katakana: 'ツ',
+        },
+        {
+            id: 'k-te',
+            romaji: 'te',
+            katakana: 'テ',
+        },
+        {
+            id: 'k-to',
+            romaji: 'to',
+            katakana: 'ト',
+        },
+        {
+            id: 'k-na',
+            romaji: 'na',
+            katakana: 'ナ',
+        },
+        {
+            id: 'k-ni',
+            romaji: 'ni',
+            katakana: 'ニ',
+        },
+        {
+            id: 'k-nu',
+            romaji: 'nu',
+            katakana: 'ヌ',
+        },
+        {
+            id: 'k-ne',
+            romaji: 'ne',
+            katakana: 'ネ',
+        },
+        {
+            id: 'k-no',
+            romaji: 'no',
+            katakana: 'ノ',
+        },
+        {
+            id: 'k-ha',
+            romaji: 'ha',
+            katakana: 'ハ',
+        },
+        {
+            id: 'k-hi',
+            romaji: 'hi',
+            katakana: 'ヒ',
+        },
+        {
+            id: 'k-hu',
+            romaji: 'hu',
+            katakana: 'フ',
+        },
+        {
+            id: 'k-he',
+            romaji: 'he',
+            katakana: 'ヘ',
+        },
+        {
+            id: 'k-ho',
+            romaji: 'ho',
+            katakana: 'ホ',
+        },
+        {
+            id: 'k-ma',
+            romaji: 'ma',
+            katakana: 'マ',
+        },
+        {
+            id: 'k-mi',
+            romaji: 'mi',
+            katakana: 'ミ',
+        },
+        {
+            id: 'k-mu',
+            romaji: 'mu',
+            katakana: 'ム',
+        },
+        {
+            id: 'k-me',
+            romaji: 'me',
+            katakana: 'メ',
+        },
+        {
+            id: 'k-mo',
+            romaji: 'mo',
+            katakana: 'モ',
+        },
+        {
+            id: 'k-ya',
+            romaji: 'ya',
+            katakana: 'ヤ',
+        },
+        {
+            id: 'k-yu',
+            romaji: 'yu',
+            katakana: 'ユ',
+        },
+        {
+            id: 'k-yo',
+            romaji: 'yo',
+            katakana: 'ヨ',
+        },
+        {
+            id: 'k-ra',
+            romaji: 'ra',
+            katakana: 'ラ',
+        },
+        {
+            id: 'k-ri',
+            romaji: 'ri',
+            katakana: 'リ',
+        },
+        {
+            id: 'k-ru',
+            romaji: 'ru',
+            katakana: 'ル',
+        },
+        {
+            id: 'k-re',
+            romaji: 're',
+            katakana: 'レ',
+        },
+        {
+            id: 'k-ro',
+            romaji: 'ro',
+            katakana: 'ロ',
+        },
+        {
+            id: 'k-wa',
+            romaji: 'wa',
+            katakana: 'ワ',
+        },
+        {
+            id: 'k-wi',
+            romaji: 'wi',
+            katakana: 'ヰ',
+        },
+        {
+            id: 'k-we',
+            romaji: 'we',
+            katakana: 'ヱ',
+        },
+        {
+            id: 'k-wo',
+            romaji: 'wo',
+            katakana: 'ヲ',
+        },
+/*
+        {
+            id: 'k-ga',
+            romaji: 'ga',
+            katakana: '',
+        },
+        {
+            id: 'k-gi',
+            romaji: 'gi',
+            katakana: '',
+        },
+        {
+            id: 'k-gu',
+            romaji: 'gu',
+            katakana: '',
+        },
+        {
+            id: 'k-ge',
+            romaji: 'ge',
+            katakana: '',
+        },
+        {
+            id: 'k-go',
+            romaji: 'go',
+            katakana: '',
+        },
+        {
+            id: 'k-za',
+            romaji: 'za',
+            katakana: '',
+        },
+        {
+            id: 'k-ji',
+            romaji: 'ji',
+            katakana: '',
+        },
+        {
+            id: 'k-zu',
+            romaji: 'zu',
+            katakana: '',
+        },
+        {
+            id: 'k-ze',
+            romaji: 'ze',
+            katakana: '',
+        },
+        {
+            id: 'k-zo',
+            romaji: 'zo',
+            katakana: '',
+        },
+        {
+            id: 'k-da',
+            romaji: 'da',
+            katakana: '',
+        },
+        {
+            id: 'k-ji',
+            romaji: 'ji',
+            katakana: '',
+        },
+        {
+            id: 'k-zu',
+            romaji: 'zu',
+            katakana: '',
+        },
+        {
+            id: 'k-de',
+            romaji: 'de',
+            katakana: '',
+        },
+        {
+            id: 'k-do',
+            romaji: 'do',
+            katakana: '',
+        },
+        {
+            id: 'k-ba',
+            romaji: 'ba',
+            katakana: '',
+        },
+        {
+            id: 'k-bi',
+            romaji: 'bi',
+            katakana: '',
+        },
+        {
+            id: 'k-bu',
+            romaji: 'bu',
+            katakana: '',
+        },
+        {
+            id: 'k-be',
+            romaji: 'be',
+            katakana: '',
+        },
+        {
+            id: 'k-bo',
+            romaji: 'bo',
+            katakana: '',
+        },
+        {
+            id: 'k-pa',
+            romaji: 'pa',
+            katakana: '',
+        },
+        {
+            id: 'k-pi',
+            romaji: 'pi',
+            katakana: '',
+        },
+        {
+            id: 'k-pu',
+            romaji: 'pu',
+            katakana: '',
+        },
+        {
+            id: 'k-pe',
+            romaji: 'pe',
+            katakana: '',
+        },
+        {
+            id: 'k-po',
+            romaji: 'po',
+            katakana: '',
+        },
+        {
+            id: 'k-kya',
+            romaji: 'kya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-kyu',
+            romaji: 'kyu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-kyo',
+            romaji: 'kyo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-sha',
+            romaji: 'sha',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-shu',
+            romaji: 'shu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-sho',
+            romaji: 'sho',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-cha',
+            romaji: 'cha',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-chu',
+            romaji: 'chu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-cho',
+            romaji: 'cho',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-nya',
+            romaji: 'nya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-nyu',
+            romaji: 'nyu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-nyo',
+            romaji: 'nyo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-hya',
+            romaji: 'hya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-hyu',
+            romaji: 'hyu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-hyo',
+            romaji: 'hyo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-mya',
+            romaji: 'mya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-myu',
+            romaji: 'myu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-myo',
+            romaji: 'myo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-rya',
+            romaji: 'rya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-ryu',
+            romaji: 'ryu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-ryo',
+            romaji: 'ryo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-gya',
+            romaji: 'gya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-gyu',
+            romaji: 'gyu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-gyo',
+            romaji: 'gyo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-ja',
+            romaji: 'ja',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-ju',
+            romaji: 'ju',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-jo',
+            romaji: 'jo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-ja',
+            romaji: 'ja',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-ju',
+            romaji: 'ju',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-jo',
+            romaji: 'jo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-bya',
+            romaji: 'bya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-byu',
+            romaji: 'byu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-byo',
+            romaji: 'byo',
+            katakana: 'ょ',
+        },
+        {
+            id: 'k-pya',
+            romaji: 'pya',
+            katakana: 'ゃ',
+        },
+        {
+            id: 'k-pyu',
+            romaji: 'pyu',
+            katakana: 'ゅ',
+        },
+        {
+            id: 'k-pyo',
+            romaji: 'pyo',
+            katakana: 'ょ',
+        },
+*/
+
 /*
         {
             id: 'v-au',
@@ -1237,11 +1789,15 @@
         data.show_correct = data.show_wrong = false;
 
         maybe_increase_waterline();
-        var concepts = get_sorted_concepts();
-        var question = get_best_question_data(concepts);
+
+        var direction = random_element(directions);
+        console.log('direction is ', direction);
+
+        var concepts = get_sorted_concepts(direction);
+        var question = get_best_question_data(concepts, direction);
         data.concepts = question.concepts;
         data.answer = question.answer;
-        data.direction = question.direction;
+        data.direction = direction;
         data.question_score = question.score;
         console.log("data", data);
     }
@@ -1408,16 +1964,16 @@
         return  total_confidence / total_count;
     }
         
-    function get_best_question_data(sorted_concepts) {
+    function get_best_question_data(sorted_concepts, direction) {
         var now = new Date().getTime();
 
         // Select the highest scoring question according the question
         // scoring function which looks for concepts that haven't been
         // answered correctly in the longest amount of time, etc.
 
-        var question = get_question_data(sorted_concepts, now);
+        var question = get_question_data(sorted_concepts, now, direction);
         for (var i = 0; i < 1000; i++) {
-            var q2 = get_question_data(sorted_concepts, now);
+            var q2 = get_question_data(sorted_concepts, now, direction);
             if (q2.score > question.score && 
                 !is_too_early(question)) {
                 question = q2;
@@ -1426,7 +1982,7 @@
         return question;
     }
 
-    function get_question_data(sorted_concepts, now) {
+    function get_question_data(sorted_concepts, now, direction) {
         var result = {};
         result.concepts = [];
         var number_of_concepts = 2 + Math.floor(Math.random() * 4);
@@ -1445,36 +2001,12 @@
         // console.log("get_question_data", result);
         var index = Math.floor(Math.random() * result.concepts.length);
         result.answer = result.concepts[index];
-        result.direction = get_direction(result);
-        result.score = score_question(now, result);
+        result.direction = direction;
+        result.score = score_question(now, result, direction);
         return result;
     }
 
-    function get_direction(question) {
-        // Choose a direction at random and see if all of the concepts support
-        // that format.
-        for (var i = 0; i < 100; i++) {
-            var direction = directions[Math.floor(Math.random() * directions.length)];
-            var num_matches = 0;
-            // console.log("concepts", question.concepts);
-            for (var j = 0; j < question.concepts.length; j++) {
-                var concept = question.concepts[j];
-                var prefixChar = concept.id.charAt(0);
-                if (direction.direction_id_match.includes(prefixChar)) {
-                    num_matches++;
-                } else {
-                  break;
-                }
-            }
-            if (num_matches == question.concepts.length) {
-                return direction;
-            }
-        }
-        throw "A suitable direction could not be found";
-    }
-
-    function score_question(now, result) {
-        var direction = result.direction;
+    function score_question(now, result, direction) {
         var score = 0.0;
         var total_directions_never_correct = 0;
         for (var i = 0; i < result.concepts.length; i++) {
@@ -1528,14 +2060,18 @@
         }
     }
 
-    function get_sorted_concepts() {
+    function get_sorted_concepts(direction) {
         var array = [];
-        for (var i = 0; i < data.waterline_index; i++) {
+        // FIXME should be &&
+        for (var i = 0; i < data.waterline_index || i < all_concepts.length; i++) {
             var concept = all_concepts[i];
-            array.push({
-                    score: score_concept(concept),
-                    concept: concept,
-            });
+            var prefixChar = concept.id.charAt(0);
+            if (direction.direction_id_match.includes(prefixChar)) {
+               array.push({
+                     score: score_concept(concept),
+                         concept: concept,
+               });
+           }
         }
         array.sort(function (a, b) {return b.score - a.score;});
         return array;
