@@ -293,22 +293,32 @@
         return get_answer_text_from_concept(data.concepts[position], data.direction);
     }
 
-    function make_direction(question, answer, id_match) {
+    // This provides a concept filter based on the first character of the concept id
+    function id_prefix_match(letter_string) {
+      var letter = letter_string.charAt(0);
+      return function (concept) {
+        var concept_id = concept.id;
+        var concept_id_prefix = concept_id.charAt(0);
+        return letter == concept_id_prefix;
+      };
+    }
+
+    function make_direction(question, answer, function_match) {
       return {
         direction_name: question + '__to__' + answer,
         direction_start: question,
         direction_end: answer,
-        direction_id_match: id_match,
+        function_match: function_match,
       };
     }
 
     var directions = [
-        make_direction('romaji', 'hiragana', ['h']),
-        make_direction('hiragana', 'romaji', ['h']),
-        make_direction('romaji', 'katakana', ['k']),
-        make_direction('katakana', 'romaji', ['k']),
-        make_direction('hiragana', 'english', ['n']),
-        make_direction('english', 'hiragana', ['n']),
+        make_direction('romaji', 'hiragana', id_prefix_match('h')),
+        make_direction('hiragana', 'romaji', id_prefix_match('h')),
+        make_direction('romaji', 'katakana', id_prefix_match('k')),
+        make_direction('katakana', 'romaji', id_prefix_match('k')),
+        make_direction('hiragana', 'english', id_prefix_match('n')),
+        make_direction('english', 'hiragana', id_prefix_match('n')),
 
         // make_direction('romaji', 'english', ['v']),
         // make_direction('hiragana', 'english', ['v']),
@@ -2336,7 +2346,7 @@ table,
         var result = 0;
         for (var j = 0; j < directions.length; j++) {
             var direction = directions[j];
-            if (direction.direction_id_match.includes(concept_id_prefix)) {
+            if (direction.function_match(concept)) {
                 if (!stat[direction.direction_name]
                     || !stat[direction.direction_name].correct
                     || stat[direction.direction_name].correct <= 0) {
@@ -2465,8 +2475,7 @@ table,
         // FIXME should be &&
         for (var i = 0; i < data.waterline_index || i < all_concepts.length; i++) {
             var concept = all_concepts[i];
-            var prefixChar = concept.id.charAt(0);
-            if (direction.direction_id_match.includes(prefixChar)) {
+            if (direction.function_match(concept)) {
                array.push({
                      score: score_concept(concept),
                          concept: concept,
