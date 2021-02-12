@@ -8,20 +8,20 @@ now simply by visiting:
   https://jasonaaronwilson.github.io/nihongo/quiz.html
 
 This will look like crap on a desktop but should look OK on many smart
-phones and I'll make some more improvements soon for my own needs.
+phones or tablets.
 
 ## Current Functionality
 
-There is a database of "facts" and this program presents them in a
-multiple choice fashion. Given the "clue" at the top of the screen,
-you need only choose the correct choice from several possibilities by
-clicking on it (a "tap" on your smart phone). You then learn if your
-guess was correct or not.
+There is a database of "facts" (concepts) and this program presents
+them in a multiple choice fashion. Given the "clue" at the top of the
+screen, you need only choose the correct choice from several
+possibilities by clicking on it (a "tap" on your smart phone or a
+click of the mouse). You then learn if your answer was correct or not.
 
 Using local storage on your device, we keep track of your correct and
 incorrect responses to present the hardest challenge to you and
 eventually expose more questions in the database as you achieve
-confidence.
+proficiency.
 
 In the future we could sync between multiple devices but that might
 end up requiring a hosting provider besides github and that would mean
