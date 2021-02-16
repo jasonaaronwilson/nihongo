@@ -215,6 +215,13 @@
           <div>
             {{ get_question_answer_text($data) }}
           </div>
+          <div v-if="show_correct">
+            {{ $data.session_correct_number + 1}} / {{ $data.session_question_number + 1}}
+          </div>
+          <div v-if="show_wrong">
+            {{ $data.session_correct_number }} / {{ $data.session_question_number + 1}}
+          </div>
+
           <pre class="full-concept-json">{{ JSON.stringify(answer, null, 2) }}</pre>
           <div class="dialog-button" onclick="select_next_question(); event.stopPropagation()">
             Next question
@@ -238,6 +245,8 @@
   </body>
 
   <script type="text/javascript">
+
+    var SESSION_QUESTIONS = 10; // Easier for debugging
 
     var FONT_FAMILIES = [
        'font-family-noto-serif-jp',
@@ -1651,7 +1660,7 @@ table,
         {
             id: 'n-hayai',
             romaji: 'hayai',
-            hiragana: 'ひやい',
+            hiragana: 'はやい',
             kanji: '早い',
             english: 'early',
         },
@@ -2314,6 +2323,9 @@ table,
         // when true, show the debug extra information
         debug: false,
 
+        session_question_number: 0,
+        session_correct_number: 0,
+
         // functions used during rendering
         get_question_text: get_question_text,
         get_question_answer_text: get_question_answer_text,
@@ -2373,8 +2385,13 @@ table,
         var stat = get_stat(question_id);
         if (data.show_correct) {
             increment_direction_statistic(stat, direction_name, 'correct');
+            data.session_correct_number += 1;
         } else {
             increment_direction_statistic(stat, direction_name, 'wrong');
+        }
+        data.session_question_number += 1;
+        if (data.session_question_number >= SESSION_QUESTIONS) {
+          data.session_question_number = data.session_correct_number = 0;
         }
         stats[question_id] = stat;
         localStorage.setItem("stats", JSON.stringify(stats));
