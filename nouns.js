@@ -697,4 +697,52 @@ var NOUN_CONCEPTS = [
         hiragana: 'まつげ',
         english: 'eyelash',
     },
+    {
+        id: 'n-kita',
+        romaji: 'kita',
+        hiragana: 'きた',
+        english: 'north',
+    },
+    {
+        id: 'n-minami',
+        romaji: 'minami',
+        hiragana: 'みなみ',
+        english: 'south',
+    },
+    {
+        id: 'n-azuma',
+        romaji: 'azuma',
+        hiragana: 'あずま',
+        english: 'east',
+    },
+    {
+        id: 'n-nishi',
+        romaji: 'nishi',
+        hiragana: 'にし',
+        english: 'west',
+    },
+    {
+        id: 'n-jō',
+        romaji: 'jō',
+        hiragana: 'じょう',
+        english: 'up',
+    },
+    {
+        id: 'n-shita',
+        romaji: 'shita',
+        hiragana: 'した',
+        english: 'down',
+    },
+    {
+        id: 'n-hidari',
+        romaji: 'hidari',
+        hiragana: 'ひだり',
+        english: 'left',
+    },
+    {
+        id: 'n-migi',
+        romaji: 'migi',
+        hiragana: 'みぎ',
+        english: 'right',
+    },
 ];
