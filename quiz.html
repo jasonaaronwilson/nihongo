@@ -154,8 +154,27 @@
   <body>
     <div id="app">
 
-      <div class="app-header">
+      <div class="app-header" onclick="show_focus_area_dialog_fn(); event.stopPropagation();">
         {{ $data.direction.direction_start }} → {{ $data.direction.direction_end }}
+      </div>
+
+      <div v-if="show_focus_area_dialog">
+        <div class="dialog">
+          <div class="dialog_content">
+            <div>Select your focus areas:</div>
+            <div>
+              <input type="checkbox" id="hiragana" value="hiragana" v-model="selected_concepts">
+              <label for="Hiragana">Hiragana</label>
+            </div>
+            <div>
+              <input type="checkbox" id="katakana" value="katakana" v-model="selected_concepts">
+              <label for="katakana">Katakana</label>
+            </div>
+            <div class="dialog-button" onclick="hide_focus_area_dialog(); event.stopPropagation()">
+              Continue
+            </div>
+          </div>
+        </div>
       </div>
 
       <div :class="$data.font_family">
@@ -344,6 +363,17 @@
     var TOO_SOON_SIZE = 6;
 
     var data = {
+
+        // It seems like Vue can only bind to a property that is
+        // explicitly declared like this. This only bothers me because it
+        // took me because it took a while to figure this out.
+        //
+        //
+        // When showing the focus area dialog, we will allow the user
+        // to adjust what kind of stuff they want to see.
+        show_focus_area_dialog: false,
+
+        selected_concepts: ['hiragana'],
 
         // TODO(jawilson): Originally, I thought an algorithm could
         // determine when to advance to the next set of questions but
@@ -707,14 +737,22 @@
         console.log(data.font_family);
     }
 
+    function random_element(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function show_focus_area_dialog_fn() {
+      data.show_focus_area_dialog = true;
+    }
+
+    function hide_focus_area_dialog() {
+      data.show_focus_area_dialog = false;
+    }
+
     var app = new Vue({
         el: '#app',
         data: data,
     });
-
-    function random_element(items) {
-      return items[Math.floor(Math.random() * items.length)];
-    }
 
     select_next_question();
   </script>
