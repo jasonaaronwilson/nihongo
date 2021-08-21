@@ -170,6 +170,10 @@
               <input type="checkbox" id="katakana" value="katakana" v-model="selected_concepts">
               <label for="katakana">Katakana</label>
             </div>
+            <div>
+              <input type="checkbox" id="nouns" value="nouns" v-model="selected_concepts">
+              <label for="katakana">Nouns</label>
+            </div>
             <div class="dialog-button" onclick="hide_focus_area_dialog(); event.stopPropagation()">
               Continue
             </div>
@@ -346,19 +350,6 @@
       };
     }
 
-    var directions = [
-        make_direction('romaji', 'hiragana', id_prefix_match('h')),
-        make_direction('hiragana', 'romaji', id_prefix_match('h')),
-        make_direction('romaji', 'katakana', id_prefix_match('k')),
-        make_direction('katakana', 'romaji', id_prefix_match('k')),
-        make_direction('hiragana', 'english', id_prefix_match('n')),
-        make_direction('english', 'hiragana', id_prefix_match('n')),
-
-        // make_direction('romaji', 'english', ['v']),
-        // make_direction('hiragana', 'english', ['v']),
-        // make_direction('english', 'hiragana', ['v']),
-    ]
-
     var INITIAL_WATERLINE = 15;
     var TOO_SOON_SIZE = 6;
 
@@ -418,6 +409,27 @@
         font_family: FONT_FAMILIES[0],
     };
 
+    // Use the "selected_concepts" the user has choosen to determine
+    // which directions to show.
+
+    function get_directions() {
+      var result = [];
+      if (data.selected_concepts.includes("hiragana")) {
+        result.push(make_direction('romaji', 'hiragana', id_prefix_match('h')));
+        result.push(make_direction('hiragana', 'romaji', id_prefix_match('h')));
+      }
+      if (data.selected_concepts.includes("katakana")) {
+        result.push(make_direction('romaji', 'katakana', id_prefix_match('k')));
+        result.push(make_direction('katakana', 'romaji', id_prefix_match('k')));
+      }
+      if (data.selected_concepts.includes("nouns")) {
+        result.push(make_direction('hiragana', 'english', id_prefix_match('n')));
+        result.push(make_direction('english', 'hiragana', id_prefix_match('n')));
+      }
+      console.log("directions", result);
+      return result;
+    }
+
     function check_answer(index) {
         data.show_correct = (data.concepts[index].id == data.answer.id);
         data.show_wrong = !data.show_correct;
@@ -429,7 +441,7 @@
 
         maybe_increase_waterline();
 
-        var direction = random_element(directions);
+        var direction = random_element(get_directions());
         console.log('direction is ', direction);
 
         var concepts = get_sorted_concepts(direction);
@@ -578,8 +590,8 @@
         var stat = get_stat(concept_id);
         var concept_id_prefix = concept_id.charAt(0);
         var result = 0;
-        for (var j = 0; j < directions.length; j++) {
-            var direction = directions[j];
+        for (var j = 0; j < get_directions().length; j++) {
+            var direction = get_directions()[j];
             if (direction.function_match(concept)) {
                 if (!stat[direction.direction_name]
                     || !stat[direction.direction_name].correct
