@@ -344,20 +344,36 @@
     var TOO_SOON_SIZE = 6;
 
     var data = {
+
+        // TODO(jawilson): Originally, I thought an algorithm could
+        // determine when to advance to the next set of questions but
+        // that really interfered with my ability to expand the
+        // dictionary (solveable) and also this didn't really work for me
+        // with the couple of simple algorithms I tried (why be too
+        // clever). Instead, allowing users to turn on and *off*
+        // different broad categories to control their own learning is
+        // what I would want so that is the goal now.
+    
         // The maximum question to present. The waterline will be
         // increased as the confidence in the concepts beneath the
         // waterline raises above a threshold.
         waterline_index: stats.global && stats.global.waterline_index ? stats.global.waterline_index : INITIAL_WATERLINE,
+
         // The current "direction" of the question
         direction: make_direction('hiragana', 'romaji', 'h'),
+
         // These are the "answers" that will be present.
         concepts: [],
+
         // The current answer we are looking for which should obviously be present in concepts
         answer: {},
+
         // When true, show the correct answer dialog
         show_correct: false,
+
         // When true, show the wrong answer dialog
         show_wrong: false,
+
         // when true, show the debug extra information
         debug: false,
 
