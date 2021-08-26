@@ -42,6 +42,10 @@
       .font-family-kosugi {
         font-family: 'Kosugi', sans-serif;
       }
+      input.scaled-checkbox {
+        width: 3em;
+        height: 3em;
+      }
     </style>
 
     <!-- Alternate colors:
@@ -161,22 +165,22 @@
       <div v-if="show_focus_area_dialog">
         <div class="dialog">
           <div class="dialog_content">
-            <div>Select your focus areas:</div>
             <div>
-              <input type="checkbox" id="hiragana" value="hiragana" v-model="selected_concepts">
-              <label for="Hiragana">Hiragana</label>
-            </div>
-            <div>
-              <input type="checkbox" id="katakana" value="katakana" v-model="selected_concepts">
-              <label for="katakana">Katakana</label>
-            </div>
-            <div>
-              <input type="checkbox" id="nouns" value="nouns" v-model="selected_concepts">
-              <label for="katakana">Nouns</label>
-            </div>
-            <div class="dialog-button" onclick="hide_focus_area_dialog(); event.stopPropagation()">
-              Continue
-            </div>
+              <div>Select your focus areas:</div>
+                <input type="checkbox" class="scaled-checkbox" id="hiragana" value="hiragana" v-model="selected_concepts">
+                <label for="hiragana">Hiragana</label>
+              </div>
+              <div>
+                <input type="checkbox" class="scaled-checkbox" id="katakana" value="katakana" v-model="selected_concepts">
+                <label for="katakana">Katakana</label>
+              </div>
+              <div>
+                <input type="checkbox" class="scaled-checkbox" id="nouns" value="nouns" v-model="selected_concepts">
+                <label for="katakana">Nouns</label>
+              </div>
+              <div class="dialog-button" onclick="hide_focus_area_dialog(); event.stopPropagation()">
+                Continue
+              </div>
           </div>
         </div>
       </div>
